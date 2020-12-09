@@ -1,0 +1,43 @@
+// Project Config
+.GameName = 'game'
+.SourcePath = 'src'
+.OutputPath = 'build'
+.BinPath = 'bin'
+.SolutionPath = 'solution'
+
+// Includes
+#include "build/paths.bff"
+#include "compiler.bff"
+
+// Build targets
+
+.AllTargets = {}
+
+ForEach(.BuildType in .BuildTypes)
+{
+	Using(.BuildType)
+
+	// Win32 Platform
+	ObjectList('EditorSource_$BuildTypeName$')
+	{
+		.CompilerOptions = '$ExeCompilerOptions$ -DUSING_IMGUI=1'
+		.CompilerInputFiles = {
+			'$SourcePath$/Source.cpp',
+		}
+		.CompilerOutputPath = '$OutputPath$/$BuildTypeName$'
+	}
+	Executable('Editor_$BuildTypeName$')
+	{
+		.LinkerOptions = '$ExeLinkerOptions$ /SUBSYSTEM:WINDOWS,5.02'
+		.LinkerOutput = '$BinPath$/Editor$BuildTypeSufix$.exe'
+		.Libraries = {
+			'EditorSource_$BuildTypeName$',
+		}
+	}
+
+	// Add to all targets
+	^AllTargets + 'Editor_$BuildTypeName$'
+
+}
+
+Alias('all') { .Targets = .AllTargets }
