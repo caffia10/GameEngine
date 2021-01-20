@@ -17,6 +17,16 @@ ForEach(.BuildType in .BuildTypes)
 {
 	Using(.BuildType)
 
+	// ImGui
+	ObjectList('ImGuiSource_$BuildTypeName$')
+	{
+		.CompilerOptions = '$ExeCompilerOptions$ -DIMGUI_IMPL_OPENGL_LOADER_CUSTOM'
+		.CompilerInputFiles = {
+			'external/include/imgui/imgui_impl.cpp',
+		}
+		.CompilerOutputPath = '$OutputPath$/$BuildTypeName$'
+	}
+
 	// Win32 Platform
 	ObjectList('EditorSource_$BuildTypeName$')
 	{
@@ -32,6 +42,7 @@ ForEach(.BuildType in .BuildTypes)
 		.LinkerOutput = '$BinPath$/Editor$BuildTypeSufix$.exe'
 		.Libraries = {
 			'EditorSource_$BuildTypeName$',
+			'ImGuiSource_$BuildTypeName$',
 		}
 	}
 

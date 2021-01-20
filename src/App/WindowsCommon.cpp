@@ -4,8 +4,13 @@
 
 HANDLE g_hStdout;
 
+#if defined(TARGET_WINDOWS)
+#undef LOG
+#define LOG(format, __ARGS__) Log(format, __ARGS__)
+#endif
 
-void Log(const char* format, ...)
+
+void Log(char const* format, ...)
 {
 	char buffer[2048];
 	va_list args;

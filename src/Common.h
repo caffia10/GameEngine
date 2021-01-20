@@ -1,3 +1,5 @@
+#ifndef COMMON_H
+#define COMMON_H
 
 #if defined(WIN32) || defined(_WIN32)
 #define TARGET_WINDOWS 1
@@ -7,6 +9,9 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+
+#include <iostream>
+#include <fstream>
 
 #if !TARGET_WINDOWS
 #include <assert.h>
@@ -33,3 +38,23 @@
 // I hate this programming language
 #undef near
 #undef far
+
+#define LOG(format, __ARGS__)
+
+std::string ReadFile(char const* fileName)
+{
+	std::string contents;
+	std::FILE* fp = std::fopen(fileName, "rb");
+	if (fp)
+	{
+		std::fseek(fp, 0, SEEK_END);
+		contents.resize(std::ftell(fp));
+		std::rewind(fp);
+		std::fread(&contents[0], 1, contents.size(), fp);
+		std::fclose(fp);
+	}
+
+	return(contents);
+}
+
+#endif // COMMON_H

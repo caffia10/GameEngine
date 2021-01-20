@@ -11,13 +11,17 @@
 #include "Common.h"
 #include "Engines/Maths/MathDef.h"
 
-
 #include "App/WindowsCommon.cpp"
 
 #include "Engines/Renderer/OpenGLRender.cpp"
 
-bool isRunning;
+#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+#include <imgui/imgui_impl_win32.cpp>
+#include <imgui/imgui_impl_opengl3.cpp>
+#include <imgui/imgui.h>
 
+
+bool isRunning;
 
 struct AppContext
 {
@@ -26,6 +30,7 @@ struct AppContext
 	HWND windowHandle;
 	HDC deviceContext;
 	HGLRC glContext;
+	ImGuiContext* imGuiContext;
 };
 
 
@@ -33,29 +38,29 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 {
 	switch (message)
 	{
-		case WM_KEYDOWN:
+	case WM_KEYDOWN:
+	{
+		if (wParam == VK_ESCAPE)
 		{
-			if (wParam == VK_ESCAPE)
-			{
-				DestroyWindow(hwnd);
-			}
-			break;
+			DestroyWindow(hwnd);
 		}
-		case WM_DESTROY:
-		{
-			isRunning = false;
-			PostQuitMessage(0);
-			break;
-		}
-		default:
-			return DefWindowProc(hwnd, message, wParam, lParam);
+		break;
+	}
+	case WM_DESTROY:
+	{
+		isRunning = false;
+		PostQuitMessage(0);
+		break;
+	}
+	default:
+		return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 
 	return NULL;
 };
 
 // Initialize the window and the context, if you have any errors, return 1 otherwise return 0
-i8 Initialize(AppContext *appContext, const i32 nShowCmd)
+i8 Initialize(AppContext* appContext, const i32 nShowCmd)
 {
 
 	AttachConsole(ATTACH_PARENT_PROCESS);
@@ -191,7 +196,7 @@ i8 Initialize(AppContext *appContext, const i32 nShowCmd)
 
 	appContext->deviceContext = GetDC(appContext->windowHandle);
 
-	const i32 pixelAttribs [] =
+	const i32 pixelAttribs[] =
 	{
 		WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
 		WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
@@ -242,8 +247,8 @@ i8 Initialize(AppContext *appContext, const i32 nShowCmd)
 	SetPixelFormat(appContext->deviceContext, pixelFormatId, &pfd);
 
 	// Time to create our real OpenGL rendering context. 
-	const i32 major_min = 3, minor_min = 3;
-	i32  contextAttribs [] = {
+	const i32 major_min = 4, minor_min = 5;
+	i32  contextAttribs[] = {
 		WGL_CONTEXT_MAJOR_VERSION_ARB, major_min,
 		WGL_CONTEXT_MINOR_VERSION_ARB, minor_min,
 		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
@@ -272,7 +277,24 @@ i8 Initialize(AppContext *appContext, const i32 nShowCmd)
 		return 1;
 	}
 
-	SetWindowText(appContext->windowHandle, (LPCSTR)glGetString(GL_VERSION));
+	LPCSTR const glVersion = (LPCSTR)glGetString(GL_VERSION);
+
+	// Setup Dear ImGui context
+	{
+		IMGUI_CHECKVERSION();
+		appContext->imGuiContext = ImGui::CreateContext();
+
+		// Setup Platform/Renderer bindings
+		ImGui_ImplWin32_Init(appContext->windowHandle);
+		const char* glslVersion = "#version 450";
+		ImGui_ImplOpenGL3_Init(glslVersion);
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+	}
+
+
+	SetWindowText(appContext->windowHandle, glVersion);
 	ShowWindow(appContext->windowHandle, nShowCmd);
 
 	return 0;
@@ -318,11 +340,28 @@ int WINAPI WinMain(
 		while (isRunning)
 		{
 			Broadcast();
+
+			// feed inputs to dear imgui, start new frame
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplWin32_NewFrame();
+			ImGui::NewFrame();
+
+			// render openGL geometries
 			RenderScene();
 
+			// render GUI
+			ImGui::Begin("Demon window");
+			ImGui::Button("Hello!");
+			ImGui::End();
+
+			// render dear imgui into screen
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGui::EndFrame();
 			SwapBuffers(appContext.deviceContext);
 		}
 
+		ReleaseRender();
 		wglDeleteContext(appContext.glContext);
 		ReleaseDC(appContext.windowHandle, appContext.deviceContext);
 	}

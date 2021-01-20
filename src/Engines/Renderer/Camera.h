@@ -4,6 +4,17 @@
 
 #include "Engines/Maths/Calcs.h"
 
+struct Camera
+{
+	f32 FOV;
+	f32 width;
+	f32 heigth;
+	f32 nearPlane;
+	f32 farPlane;
+	Vector3 position;
+	Matrix4 projectionMatrix;
+	Matrix4 viewMatrix;
+};
 
 inline Matrix4 CreateViewMatrix(Vector3 cameraPos)
 {

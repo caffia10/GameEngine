@@ -19,6 +19,17 @@ union Vector3
 		f32 b;
 	};
 
+	Vector3() {};
+
+	Vector3(f32 const value)
+	{
+		new (this) Vector3{ value, value, value };
+	};
+
+	Vector3(f32 const xValue, f32 const yValue, f32 const zValue)
+		: x(xValue), y(yValue), z(zValue)
+	{}
+
 };
 
 inline Vector3 operator+(const Vector3& self, const Vector3& other)
@@ -48,6 +59,15 @@ inline Vector3 operator*(const Vector3& self, f32 scalar)
 	};
 }
 
+inline Vector3 operator/(const Vector3& self, f32 scalar)
+{
+	return {
+		self.x / scalar, // X
+		self.y / scalar, // Y
+		self.z / scalar  // Z
+	};
+}
+
 //get magnitude of current vector, also called norm or legth 
 inline f32 GetMagnitude(const Vector3& vector)
 {
@@ -69,7 +89,7 @@ inline Vector3 GetCrossProduct(const Vector3& vectorA, const Vector3& vectorB)
 {
 	return {
 		(vectorA.y * vectorB.z) - (vectorA.z * vectorB.y), // X
-		(vectorA.x * vectorB.z) - (vectorA.z * vectorB.x), // Y
+		-((vectorA.x * vectorB.z) - (vectorA.z * vectorB.x)), // Y
 		(vectorA.x * vectorB.y) - (vectorA.y * vectorB.x)  // Z
 	};
 }
