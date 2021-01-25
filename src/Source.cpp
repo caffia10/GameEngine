@@ -21,6 +21,15 @@
 #include <imgui/imgui.h>
 
 
+const int WIDTH = 1920;
+const int HEIGHT = 1080;
+
+const int GAME_WIDTH = WIDTH / 2;
+const int GAME_HEIGHT = HEIGHT / 2;
+
+
+
+
 bool isRunning;
 
 struct AppContext
@@ -186,8 +195,8 @@ i8 Initialize(AppContext* appContext, const i32 nShowCmd)
 		WS_CAPTION | WS_SYSMENU | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, // style
 		CW_USEDEFAULT, // posx
 		CW_USEDEFAULT, // posy
-		1024, // width
-		768, // height
+		WIDTH, // width
+		HEIGHT, // height
 		NULL, // parent window, 
 		NULL, // menu
 		appContext->hInstance, // instance
@@ -336,7 +345,8 @@ int WINAPI WinMain(
 	if (result == 0)
 	{
 		isRunning = true;
-		InitializeScene();
+		ChangeViewPort(GAME_WIDTH, GAME_HEIGHT);
+		InitializeScene(GAME_WIDTH, GAME_HEIGHT);
 		while (isRunning)
 		{
 			Broadcast();
@@ -350,16 +360,35 @@ int WINAPI WinMain(
 			RenderScene();
 
 			// render GUI
-			ImGui::Begin("Demon window");
-			ImGui::Button("Hello!");
+			
+			//ImVec2(600, 306)ImGui::SetNextWindowPos(ImVec2(600, 306), ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowSize(ImVec2(600, 600));
+			ImGui::Begin("GameWindow");
+			{
+				// Using a Child allow to fill all the space of the window.
+				// It also alows customization
+				//ImGui::BeginChild("Render");
+				//ImGui::SetNextWindowSize(ImVec2(512,512));
+				// Get the size of the child (i.e. the whole draw size of the windows).
+				//ImVec2 wsize = ImGui::GetWindowSize();
+				// Because I use the texture from OpenGL, I need to invert the V from the UV.
+				//ImGui::Image((void*)frameBuffer,ImVec2(312,312));
+				ImGui::Image((void*)meshRenderers[0]->mesh->texture,ImVec2(312,312));
+				//ImGui::EndChild();
+			}
 			ImGui::End();
 
 			// render dear imgui into screen
 			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-			ImGui::EndFrame();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());		
+
 			SwapBuffers(appContext.deviceContext);
+
 		}
+
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
 
 		ReleaseRender();
 		wglDeleteContext(appContext.glContext);

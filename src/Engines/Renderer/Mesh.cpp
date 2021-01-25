@@ -233,6 +233,7 @@ MeshRender* CreateMeshRender(Mesh* mesh)
 
 void DrawMesh(MeshRender const* meshRender, Camera const* camera)
 {
+	
 	Matrix4 const translationMatrix = Translate(Matrix4(1.0f), meshRender->mesh->position);
 
 	Matrix4 const scaleMatrix = Scale(Matrix4(1.0f), meshRender->mesh->scale);
@@ -253,8 +254,10 @@ void DrawMesh(MeshRender const* meshRender, Camera const* camera)
 	glBindTexture(GL_TEXTURE_2D, meshRender->mesh->texture);
 
 	glBindVertexArray(meshRender->VAO);
+
 	glDrawElements(GL_TRIANGLES, (GLsizei)meshRender->mesh->indexCount, GL_UNSIGNED_INT, 0);
 
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
 	glBindVertexArray(0);
 	glUseProgram(0);
 }
