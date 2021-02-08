@@ -6,7 +6,7 @@ HANDLE g_hStdout;
 
 #if defined(TARGET_WINDOWS)
 #undef LOG
-#define LOG(format, __ARGS__) Log(format, __ARGS__)
+#define LOG(format, ...) Log(format, __VA_ARGS__)
 #endif
 
 

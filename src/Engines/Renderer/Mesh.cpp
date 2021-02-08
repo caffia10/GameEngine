@@ -102,11 +102,13 @@ inline void SetCubeData(std::vector<Vertex>& vertices, std::vector<u32>& indices
 	};
 }
 
-void SetSphereData(Mesh *mesh)
+void CreateSphereMesh(Mesh* mesh)
 {
+	mesh->position = Vector3(0.0f);
+	mesh->scale = Vector3(1.0f);
 
-	f32 const latitudeBands = 20.0f;
-	f32 const longitudeBands = 20.0f;
+	u32 const latitudeBands = 20;
+	u32 const longitudeBands = 20;
 
 	{
 		mesh->vertexCount = 441;
@@ -187,77 +189,4 @@ void SetSphereData(Mesh *mesh)
 		}
 	}
 
-}
-
-MeshRender* CreateMeshRender(Mesh* mesh)
-{
-	MeshRender* meshRender = new MeshRender();
-	meshRender->mesh = mesh;
-
-	glGenVertexArrays(1, &meshRender->VAO);
-	glBindVertexArray(meshRender->VAO);
-
-	glGenBuffers(1, &meshRender->VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, meshRender->VBO);
-	glBufferData(
-		GL_ARRAY_BUFFER,
-		sizeof(Vertex) * mesh->vertexCount,
-		&mesh->vertices[0],
-		GL_STATIC_DRAW);
-
-	glGenBuffers(1, &meshRender->EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshRender->EBO);
-	glBufferData(
-		GL_ELEMENT_ARRAY_BUFFER,
-		sizeof(u32) * mesh->indexCount,
-		&mesh->indices[0],
-		GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(
-		1,
-		2,
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(Vertex),
-		(GLvoid*)(offsetof(Vertex, Vertex::texCoords)));
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	return meshRender;
-}
-
-void DrawMesh(MeshRender const* meshRender, Camera const* camera)
-{
-	
-	Matrix4 const translationMatrix = Translate(Matrix4(1.0f), meshRender->mesh->position);
-
-	Matrix4 const scaleMatrix = Scale(Matrix4(1.0f), meshRender->mesh->scale);
-
-	Matrix4 const modelMatrix = translationMatrix * scaleMatrix;
-
-	Matrix4 const viewProjection = camera->viewMatrix * camera->projectionMatrix;
-
-	glUseProgram(meshRender->mesh->program);
-
-	GLint vpLoc = glGetUniformLocation(meshRender->mesh->program, "vp");
-	glUniformMatrix4fv(vpLoc, 1, GL_FALSE, viewProjection.mArray);
-
-	GLint modelLoc = glGetUniformLocation(meshRender->mesh->program, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, modelMatrix.mArray);
-
-	// Set Texture
-	glBindTexture(GL_TEXTURE_2D, meshRender->mesh->texture);
-
-	glBindVertexArray(meshRender->VAO);
-
-	glDrawElements(GL_TRIANGLES, (GLsizei)meshRender->mesh->indexCount, GL_UNSIGNED_INT, 0);
-
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
-	glBindVertexArray(0);
-	glUseProgram(0);
 }

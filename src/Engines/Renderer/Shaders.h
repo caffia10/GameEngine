@@ -3,7 +3,7 @@
 #define SHADERS_H
 
 #include "OpenGL.h"
-#include "Engines/Maths/MathDef.h"
+#include "Maths/MathDef.h"
 #include "Common.h"
 
 
@@ -13,7 +13,7 @@ inline GLuint CreateShader(GLenum shaderType, std::string const  source, char co
 
 	GLuint shader = glCreateShader(shaderType);
 
-	i32 const shaderCodeSize = source.size();
+	i32 const shaderCodeSize =  (i32) source.size();
 
 	 char const* sourcePtr = source.c_str();
 

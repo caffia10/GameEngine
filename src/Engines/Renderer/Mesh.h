@@ -2,10 +2,11 @@
 #define MESH_H
 
 #include <vector>
-#include "Engines/Maths/Calcs.h"
+#include "Maths/Calcs.h"
 #include "OpenGL.h"
 #include "Common.h"
 #include "Camera.h"
+#include "Texture.h"
 
 enum MeshType 
 {
@@ -31,15 +32,6 @@ struct Mesh
 	Vertex *vertices;
 	Vector3 position;
 	Vector3 scale;
-	u32 program;
-	u32 texture;
 };
 
-struct MeshRender
-{
-	u32 VAO;
-	u32 VBO;
-	u32 EBO;
-	Mesh* mesh;
-};
 #endif // MESH_H

@@ -9,26 +9,17 @@
 #include "Engines/Renderer/OpenGL.cpp"
 
 #include "Common.h"
-#include "Engines/Maths/MathDef.h"
+#include "Maths/MathDef.h"
 
 #include "App/WindowsCommon.cpp"
 
 #include "Engines/Renderer/OpenGLRender.cpp"
 
-#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-#include <imgui/imgui_impl_win32.cpp>
-#include <imgui/imgui_impl_opengl3.cpp>
-#include <imgui/imgui.h>
+#include "GUI/MainWindow.h"
 
 
-const int WIDTH = 1920;
-const int HEIGHT = 1080;
-
-const int GAME_WIDTH = WIDTH / 2;
-const int GAME_HEIGHT = HEIGHT / 2;
-
-
-
+const i32 WIDTH = 1920;
+const i32 HEIGHT = 1080;
 
 bool isRunning;
 
@@ -289,18 +280,7 @@ i8 Initialize(AppContext* appContext, const i32 nShowCmd)
 	LPCSTR const glVersion = (LPCSTR)glGetString(GL_VERSION);
 
 	// Setup Dear ImGui context
-	{
-		IMGUI_CHECKVERSION();
-		appContext->imGuiContext = ImGui::CreateContext();
-
-		// Setup Platform/Renderer bindings
-		ImGui_ImplWin32_Init(appContext->windowHandle);
-		const char* glslVersion = "#version 450";
-		ImGui_ImplOpenGL3_Init(glslVersion);
-
-		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
-	}
+	appContext->imGuiContext = InitializeGUI(appContext->windowHandle);
 
 
 	SetWindowText(appContext->windowHandle, glVersion);
@@ -345,42 +325,20 @@ int WINAPI WinMain(
 	if (result == 0)
 	{
 		isRunning = true;
-		ChangeViewPort(GAME_WIDTH, GAME_HEIGHT);
-		InitializeScene(GAME_WIDTH, GAME_HEIGHT);
+		ChangeViewPort(sceneWindowWidth, sceneWindowHeight);
+		InitializeScene(sceneWindowWidth, sceneWindowHeight);
 		while (isRunning)
 		{
 			Broadcast();
 
 			// feed inputs to dear imgui, start new frame
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplWin32_NewFrame();
-			ImGui::NewFrame();
+			NewFrameGUI();
 
 			// render openGL geometries
 			RenderScene();
 
 			// render GUI
-			
-			//ImVec2(600, 306)ImGui::SetNextWindowPos(ImVec2(600, 306), ImGuiCond_FirstUseEver);
-			ImGui::SetNextWindowSize(ImVec2(600, 600));
-			ImGui::Begin("GameWindow");
-			{
-				// Using a Child allow to fill all the space of the window.
-				// It also alows customization
-				//ImGui::BeginChild("Render");
-				//ImGui::SetNextWindowSize(ImVec2(512,512));
-				// Get the size of the child (i.e. the whole draw size of the windows).
-				//ImVec2 wsize = ImGui::GetWindowSize();
-				// Because I use the texture from OpenGL, I need to invert the V from the UV.
-				//ImGui::Image((void*)frameBuffer,ImVec2(312,312));
-				ImGui::Image((void*)meshRenderers[0]->mesh->texture,ImVec2(312,312));
-				//ImGui::EndChild();
-			}
-			ImGui::End();
-
-			// render dear imgui into screen
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());		
+			RenderGUI();
 
 			SwapBuffers(appContext.deviceContext);
 

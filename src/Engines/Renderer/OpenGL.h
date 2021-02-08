@@ -30,6 +30,7 @@ typedef void (GLAPIENTRY* glBlendFuncSeparateProc)(GLenum sfactorRGB, GLenum dfa
 
 typedef void (GLAPIENTRY* glGenFramebuffersProc)(GLsizei n, GLuint* ids);
 typedef void (GLAPIENTRY* glBindFramebufferProc)(GLenum target, GLuint framebuffer);
+typedef void (GLAPIENTRY *glFramebufferTextureProc)(GLenum target, GLenum attachment, GLuint texture, GLint level);
 typedef void (GLAPIENTRY* glFramebufferTexture2DProc)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
 typedef void (GLAPIENTRY* glFramebufferRenderbufferProc)(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
 typedef void (GLAPIENTRY* glDrawBuffersProc)(GLsizei n, const GLenum* bufs);
@@ -123,6 +124,7 @@ GL_DeclareProc(glBlendFunc);
 GL_DeclareProc(glBlendFuncSeparate);
 GL_DeclareProc(glGenFramebuffers);
 GL_DeclareProc(glBindFramebuffer);
+GL_DeclareProc(glFramebufferTexture);
 GL_DeclareProc(glFramebufferTexture2D);
 GL_DeclareProc(glFramebufferRenderbuffer);
 GL_DeclareProc(glDrawBuffers);
@@ -203,6 +205,7 @@ GL_DeclareProc(glDisableVertexAttribArray);
 #define glBlendFuncSeparate glBlendFuncSeparatePointer
 #define glGenFramebuffers glGenFramebuffersPointer
 #define glBindFramebuffer glBindFramebufferPointer
+#define glFramebufferTexture glFramebufferTexturePointer
 #define glFramebufferTexture2D glFramebufferTexture2DPointer
 #define glFramebufferRenderbuffer glFramebufferRenderbufferPointer
 #define glDrawBuffers glDrawBuffersPointer

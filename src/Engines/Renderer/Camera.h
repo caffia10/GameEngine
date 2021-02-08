@@ -2,13 +2,13 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Engines/Maths/Calcs.h"
+#include "Maths/Calcs.h"
 
 struct Camera
 {
 	f32 FOV;
-	f32 width;
-	f32 heigth;
+	i32 width;
+	i32 heigth;
 	f32 nearPlane;
 	f32 farPlane;
 	Vector3 position;
@@ -24,10 +24,15 @@ inline Matrix4 CreateViewMatrix(Vector3 cameraPos)
 	return LookAt(cameraPos, cameraFront, cameraUp);
 }
 
-inline Matrix4 CreateProjectionMatrix(f32 const fov, f32 const width, f32 height, f32 const nearPlane, f32 const farPlane)
+inline Matrix4 CreateProjectionMatrix(
+	f32 const fov,
+	i32 const width,
+	i32 const height,
+	f32 const nearPlane,
+	f32 const farPlane)
 {
-	f32 const aspect = width / height;
+	i32 const aspect = width / height;
 
-	return Perspective(fov, aspect, nearPlane, farPlane);
+	return Perspective(fov, static_cast<f32>(aspect), nearPlane, farPlane);
 }
 #endif // CAMERA_H

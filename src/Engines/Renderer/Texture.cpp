@@ -2,24 +2,35 @@
 #include "OpenGL.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
-#include "Engines/Maths/MathDef.h"
+#include "Texture.h"
 
-u32 GetTextureID(std::string texFileName)
+
+
+inline void LoadTexture(Texture *texture, std::string texFileName)
 {
-	i32 width, height, channels;
-
 	stbi_uc* image = stbi_load(
 		texFileName.c_str(),
-		&width,
-		&height,
-		&channels,
+		&texture->width,
+		&texture->height,
+		&texture->channels,
 		STBI_rgb
 	);
 
-	u32 texture;
 	// Load texture
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glGenTextures(1, &texture->id);
+	glBindTexture(GL_TEXTURE_2D, texture->id);
+
+		// Create texture
+	glTexImage2D(
+		GL_TEXTURE_2D, 
+		0, 
+		GL_RGB, 
+		texture->width, 
+		texture->height, 
+		0, 
+		GL_RGB, 
+		GL_UNSIGNED_BYTE, 
+		image);
 
 	// Set texture wrapping
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -32,32 +43,18 @@ u32 GetTextureID(std::string texFileName)
 	// Set mipmap quality
 	glTexParameteri(
 		GL_TEXTURE_2D,
-		GL_TEXTURE_MIN_FILTER, 
-		GL_LINEAR_MIPMAP_LINEAR
-	);
-	glTexParameteri(
-		GL_TEXTURE_2D,
 		GL_TEXTURE_MAG_FILTER,
 		GL_LINEAR
 	);
-
-	// Create texture
-	glTexImage2D(
-		GL_TEXTURE_2D, 
-		0, 
-		GL_RGB, 
-		width, 
-		height, 
-		0, 
-		GL_RGB, 
-		GL_UNSIGNED_BYTE, 
-		image);
-
+	glTexParameteri(
+		GL_TEXTURE_2D,
+		GL_TEXTURE_MIN_FILTER, 
+		GL_LINEAR_MIPMAP_LINEAR
+	);
+	
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// release data
 	glBindTexture(GL_TEXTURE_2D,0);
 	stbi_image_free(image);
-
-	return texture;
 }
