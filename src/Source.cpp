@@ -36,6 +36,8 @@ struct AppContext
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	ImGui_ImplWin32_WndProcHandler(0, message, wParam, lParam);
+
 	switch (message)
 	{
 	case WM_KEYDOWN:

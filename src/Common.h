@@ -40,6 +40,7 @@
 #undef far
 
 #define LOG(format, __ARGS__)
+#define UI_LOG(format, ...)
 
 std::string ReadFile(char const* fileName)
 {
@@ -56,5 +57,6 @@ std::string ReadFile(char const* fileName)
 
 	return(contents);
 }
+
 
 #endif // COMMON_H

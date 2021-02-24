@@ -1,6 +1,6 @@
 #include <imgui/imgui.h>
 
-void RenderMainMenuBar()
+inline void RenderMainMenuBar()
 {
     if (ImGui::BeginMainMenuBar())
     {
