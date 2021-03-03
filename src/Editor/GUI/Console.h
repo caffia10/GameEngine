@@ -27,6 +27,9 @@ inline void DrawConsole(ImGuiID layoutId)
     ImGui::End();
 }
 
+#undef UI_LOG
+#define UI_LOG(format, ...) UILog(format, __VA_ARGS__) 
+
 inline void UILog(const char* fmt, ...)
 {
     const u32 textSize = ArrayCount(fmt);
@@ -46,10 +49,7 @@ inline void UILog(const char* fmt, ...)
 }
 
 
-#if USING_IMGUI
-#undef UI_LOG
-#define UI_LOG(format, ...) UILog(format, __VA_ARGS__) 
-#endif
+
 
 inline void Clear()
 {

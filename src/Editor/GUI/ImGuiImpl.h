@@ -7,4 +7,5 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
+#define UI_LOG(format, ...)
 #endif

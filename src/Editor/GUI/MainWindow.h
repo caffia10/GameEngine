@@ -2,8 +2,8 @@
 #define MAIN_WINDOW_H
 
 #include "ImGuiImpl.h"
-#include "MainMenuBar.h"
 #include "Console.h"
+#include "MainMenuBar.h"
 
 static i32 sceneWindowWidth;
 static i32 sceneWindowHeight;
@@ -83,14 +83,6 @@ void RenderGUI()
         appLayout.dockIdBottom = dockIdBottom;
         appLayout.dockIdMain = dockIdMain;
         appLayout.dockIdRight = dockIdRight;
-    }
-    else{
-        static int count = 0;
-        if (count == 0)
-        {
-            count++;
-            UI_LOG(" Docking creation finished");
-        }
     }
 
     ImGui::SetNextWindowDockID(appLayout.dockIdLeft, ImGuiCond_Once);
