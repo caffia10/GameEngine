@@ -4,6 +4,7 @@
 .OutputPath = 'build'
 .BinPath = 'bin'
 .SolutionPath = 'solution'
+.ToolsSourcePath = 'src/Tools'
 
 // Includes
 #include "build/paths.bff"
@@ -12,6 +13,28 @@
 // Build targets
 
 .AllTargets = {}
+
+// Preprocessor
+ObjectList('PreprocessorSource')
+{
+	Using(.DebugBuild)
+
+	.CompilerOptions = '$ExeCompilerOptions$'
+	.CompilerInputFiles = '$ToolsSourcePath$/Preprocessor.cpp'
+	.CompilerOutputPath = '$OutputPath$/$BuildTypeName$'
+}
+Executable('Preprocessor')
+{
+	Using(.DebugBuild)
+
+	.LinkerOptions = .ExeLinkerOptions + ' /SUBSYSTEM:CONSOLE'
+	.LinkerOutput = '$BinPath$/Preprocessor.exe'
+	.Libraries = {
+		'PreprocessorSource',
+	}
+}
+
+
 
 ForEach(.BuildType in .BuildTypes)
 {
@@ -28,6 +51,21 @@ ForEach(.BuildType in .BuildTypes)
 	}
 
 	// Win32 Platform
+	Exec('EditorCPreprocess_$BuildTypeName$')
+	{
+		.ExecExecutable = '$CompilerExe$'
+		.ExecOutput = '$GeneratedIncludePath$/Win32Platform$BuildTypeSufix$.i'
+		.ExecArguments = '$ExeCompilerOptions$ /DPREPROCESSING=1 src/Win32Platform.cpp /P /Fi$GeneratedIncludePath$/Win32Platform$BuildTypeSufix$.i'
+		.ExecAlways = true
+	}
+	Exec('EditorPreprocess_$BuildTypeName$')
+	{
+		.ExecExecutable = 'Preprocessor'
+		.ExecInput = '$GeneratedIncludePath$/Win32Platform$BuildTypeSufix$.i'
+		.ExecOutput = '$GeneratedIncludePath$/Win32Platform$BuildTypeSufix$.cpp'
+		.ExecArguments = '-platform $GeneratedIncludePath$/Win32Platform$BuildTypeSufix$.i'
+		.ExecAlways = true
+	}
 	ObjectList('EditorSource_$BuildTypeName$')
 	{
 		.CompilerOptions = '$ExeCompilerOptions$ -DUSING_IMGUI=1'
