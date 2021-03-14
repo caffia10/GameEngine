@@ -1,11 +1,10 @@
-#ifndef CALCS_H
-#define CALCS_H
-
+#ifndef CALCS_B
+#define CALCS_B
 
 #include "MathDef.h"
-#include "Matrix.h"
-#include "Vector.h"
-#include "Common.h"
+#include "Matrix.cpp"
+#include "Vector.cpp"
+#include "Common/Common.h"
 
 inline Vector3 operator*(Vector3 const& self, Matrix3 const& matrix)
 {
@@ -18,7 +17,7 @@ inline Vector3 operator*(Vector3 const& self, Matrix3 const& matrix)
 	return result;
 }
 
-inline Matrix4 LookAt(Vector3 const& eye, Vector3  const& center, Vector3  const& up)
+Matrix4 LookAt(Vector3 const& eye, Vector3  const& center, Vector3  const& up)
 {
 	Vector3 const  f = GetNormalVector(center - eye);
 	Vector3 const  s = GetNormalVector(GetCrossProduct(f, up));
@@ -88,4 +87,4 @@ inline Matrix4 Scale(Matrix4 const matrix, Vector3 const scalar)
 	return matrix * ScalingMatrix;
 }
 
-#endif
+#endif // CALCS_B

@@ -1,6 +1,7 @@
-#include <stdlib.h>
+#include "Common/Common.h"
+#include "Common/WindowsCommon.h"
 #include "Storage/MetaInfo.h"
-
+#include "Storage/StorageHandler.h"
 /*
 This is a example of how we generate and save metainfo of each entiy
 struct MetaInfo_Sarasa : MetaInfo
@@ -46,9 +47,17 @@ int main(int argc, char** argv)
 {
 #if TARGET_WINDOWS
 	AttachConsole(ATTACH_PARENT_PROCESS);
+	// Handles returned by GetStdHandle can be used by applications that need to read from or write to the console.
 	g_hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 #endif
 
+	std::vector<char const*> const fileList = GetFileListFromFolder("/src/Game");
+
+	for (size_t i = 0; i < count; i++)
+	{
+		/* code */
+	}
+	
 	
 }
 

@@ -20,7 +20,7 @@ struct RigidBody
     GetDirection =>    V3Normalize(velocity)
 */
 
-inline void UpdatePosition(RigidBody &rigidBody, f32 time)
+void UpdatePosition(RigidBody &rigidBody, f32 time)
 {
     rigidBody.position += rigidBody.velocity * time;
 }

@@ -4,13 +4,13 @@
 #include <GLES3/glext.h>
 #include <GLES3/wglext.h>
 #include <GLES3/glcorearb.h>
-#include "Common.h"
+#include "Common/Common.h"
 #include "Maths/MathDef.h"
 #include "Engines/Renderer/OpenGL.h"
 #include "Engines/Renderer/OpenGL.cpp"
 #include "Engines/Renderer/OpenGLRender.cpp"
-#include "Editor/App/WindowsCommon.cpp"
-#include "Editor/GUI/MainWindow.h"
+#include "Common/WindowsCommon.h"
+#include "Editor/GUI/MainWindow.cpp"
 
 
 const i32 WIDTH = 1920;

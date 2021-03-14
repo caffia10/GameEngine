@@ -2,7 +2,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Maths/Calcs.h"
+#include "Maths/Calcs.cpp"
 
 struct Camera
 {

@@ -1,6 +1,5 @@
 #include "ForceGenerator.h"
 
-
 void UpdateGravityForce(PointMass *pointMass, f32 duration, v3 gravity)
 {
     // check that we do not have infinite mass.

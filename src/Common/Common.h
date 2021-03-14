@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <vector>
 
 #include <iostream>
 #include <fstream>
@@ -17,7 +18,6 @@
 #include <assert.h>
 #define MAX_PATH PATH_MAX
 #endif
-
 
 #if DEBUG_BUILD
 #if TARGET_WINDOWS
@@ -41,21 +41,10 @@
 
 #define LOG(format, __ARGS__)
 
-std::string ReadFile(char const* fileName)
-{
-	std::string contents;
-	std::FILE* fp = std::fopen(fileName, "rb");
-	if (fp)
-	{
-		std::fseek(fp, 0, SEEK_END);
-		contents.resize(std::ftell(fp));
-		std::rewind(fp);
-		std::fread(&contents[0], 1, contents.size(), fp);
-		std::fclose(fp);
-	}
 
-	return(contents);
-}
-
+typedef std::vector<char*> Chars;
+typedef std::vector<char const*> CharsConst;
+typedef Chars::iterator CharsIterator;
+typedef CharsConst::iterator CharsConstIterator;
 
 #endif // COMMON_H

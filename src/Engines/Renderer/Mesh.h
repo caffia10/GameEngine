@@ -2,9 +2,9 @@
 #define MESH_H
 
 #include <vector>
-#include "Maths/Calcs.h"
+#include "Maths/Calcs.cpp"
 #include "OpenGL.h"
-#include "Common.h"
+#include "Common/Common.h"
 #include "Camera.h"
 #include "Texture.h"
 

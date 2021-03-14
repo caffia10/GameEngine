@@ -46,47 +46,12 @@ struct PointMass
     v3 forceAccumlated;
 };
 
-inline void Integrate(PointMass *pointMass, f32 duration)
-{
-    ASSERT(duration > 0.0);
-
-    /* 
-    Update linear position 
-        =>  position = p + v * t = position + (velocity * duration)
-    */
-    pointMass->position += pointMass->velocity * duration;
-
-    /*
-     Velocity Update 
-        =>  Vu = v * d^t + a * t = velocity * (damping^duration) + acceleration * duration
-     
-     Acceleration
-         => a = 1 / m * mg = inverseMass * force
-    
-     Velocity
-        => v = p / t =  position / duration
-    */
-    {
-        // Work out the acceleration from the force
-        v3 resultingAcceleration = pointMass->acceleration + (pointMass->forceAccumlated * pointMass->inverseMass);
-
-        // Update linear velocity from the acceleration.
-        pointMass->velocity += resultingAcceleration * duration;
-    }
-
-    // Impose drag
-    pointMass->velocity *= powf(pointMass->damping, duration);
-
-    // Clear the forces
-    pointMass->forceAccumlated = {0, 0, 0};
-}
-
-inline bool HasFiniteMass(PointMass *pointMass)
+bool HasFiniteMass(PointMass *pointMass)
 {
     return pointMass->inverseMass >= 0.0f;
 }
 
-inline f32 GetMass(PointMass *pointMass)
+f32 GetMass(PointMass *pointMass)
 {
     if (pointMass->inverseMass == 0)
         return DBL_MAX;
@@ -94,7 +59,7 @@ inline f32 GetMass(PointMass *pointMass)
     return 1.0f / pointMass->inverseMass;
 }
 
-inline f32 SetMass(PointMass *pointMass, const f32 mass)
+f32 SetMass(PointMass *pointMass, const f32 mass)
 {
     ASSERT(mass != 0);
     pointMass->inverseMass = 1.0f / mass;

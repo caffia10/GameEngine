@@ -3,9 +3,9 @@
 #define OPENGL_RENDER_B
 
 #include <windows.h>
-#include "Maths/Calcs.h"
+#include "Maths/Calcs.cpp"
 #include "OpenGL.h"
-#include "Common.h"
+#include "Common/Common.h"
 #include <vector>
 #include "Camera.h"
 #include "Mesh.h"
