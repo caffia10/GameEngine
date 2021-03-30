@@ -1,23 +1,29 @@
 #include "Common/Common.h"
+#include "Common/String.cpp"
 #include <filesystem>
 #include <vector>
 
+
 namespace fs = std::filesystem;
 
-CharsConst GetFileListFromFolder(char const* folderPath)
+Strings GetFileListFromFolder(char const* folderPath)
 {
-    CharsConst fileList;
-    for (const auto &entry : fs::directory_iterator(folderPath))
+    Strings fileList;
+    for (const auto &entry : fs::recursive_directory_iterator(folderPath))
     {
-        char const* path = entry.path().string().c_str();
-        fileList.push_back(path);
+        std::string const path = entry.path().string();
+
+		if (path.find(".cpp") != std::string::npos)
+			continue;
+
+        fileList.push_back(ConvertToString(path.c_str(), path.length()));
     }
     
     return  fileList;
 }
 
 
-std::string ReadFile(char const* fileName)
+StringConst ReadFile(char const* fileName)
 {
 	std::string contents;
 	std::FILE* fp = std::fopen(fileName, "rb");
@@ -30,5 +36,6 @@ std::string ReadFile(char const* fileName)
 		std::fclose(fp);
 	}
 
-	return(contents);
+	String fileContent = ConvertToString(contents.c_str(), contents.length());
+	return ToConst(fileContent);
 }

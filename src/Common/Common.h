@@ -42,9 +42,7 @@
 #define LOG(format, __ARGS__)
 
 
-typedef std::vector<char*> Chars;
-typedef std::vector<char const*> CharsConst;
-typedef Chars::iterator CharsIterator;
-typedef CharsConst::iterator CharsConstIterator;
+#define MZeroMemory(dest,size) memset(dest, 0, size)
+
 
 #endif // COMMON_H
