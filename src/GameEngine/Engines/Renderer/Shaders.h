@@ -8,15 +8,15 @@
 #include "Storage/StorageHandler.h"
 
 
-inline GLuint CreateShader(GLenum shaderType, std::string const  source, char const*  shaderName)
+inline GLuint CreateShader(GLenum shaderType, StringConst const&  source, char const*  shaderName)
 {
 	i32 compileResult = 0;
 
 	GLuint shader = glCreateShader(shaderType);
 
-	i32 const shaderCodeSize =  (i32) source.size();
+	i32 const shaderCodeSize =  (i32) source.size;
 
-	 char const* sourcePtr = source.c_str();
+	 char const* sourcePtr = source.characters;
 
 	glShaderSource(shader, 1, &sourcePtr, &shaderCodeSize);
 	glCompileShader(shader);
@@ -42,9 +42,9 @@ inline GLuint CreateShader(GLenum shaderType, std::string const  source, char co
 
 inline GLuint CreateShaderProgram(char const*  vertexShaderFilename, char const*  fragmentShaderFilename)
 {
-	std::string const  vertexShaderCode = ReadFile(vertexShaderFilename);
+	StringConst const  vertexShaderCode = ReadFile(vertexShaderFilename);
 
-	std::string const  fragmentShaderCode = ReadFile(fragmentShaderFilename);
+	StringConst const  fragmentShaderCode = ReadFile(fragmentShaderFilename);
 
 	GLuint const vertexShader = CreateShader(GL_VERTEX_SHADER, vertexShaderCode, "Vertex Shader");
 

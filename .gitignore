@@ -1,3 +1,7 @@
 .vscode/
 build/
 bin/
+solution/.vs/GameEngine/v17/Preview/ipch/AutoPCH/b5d27b532b1ae74f/STRING.ipch
+solution/.vs/
+solution/X64/
+.vs/

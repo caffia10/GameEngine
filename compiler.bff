@@ -11,7 +11,8 @@
 .WindowsSDKLibPath = '$WindowsSDKBasePath$\Lib\$WindowsSDKVersion$'
 
 .CompilerExe = '$VSBinPath$\cl.exe'
-
+.Librarian = '$VSBinPath$\lib.exe'
+.LibrarianOptions  = '%1 /OUT:%2 /NOLOGO /WX /SUBSYSTEM:WINDOWS,5.02'
 // Settings
 
 Settings
@@ -56,6 +57,7 @@ Compiler('Compiler_x64')
 					+ ' /I"$WindowsSDKIncludePath$\cppwinrt"'
 					+ ' /I"$SourcePath$"'
 					+ ' /I"$ExternalIncludePath$"'
+					+ ' /I"$CorePath$"'
 
 .CommonCompilerOptions = '/c "%1" /Fo"%2" /nologo /FC /GF /Gm- /GR- /Oi /fp:fast /EHa- /EHs- /EHc- /std:c++latest'
 					+ .CompilerWarningOptions
@@ -67,6 +69,7 @@ Compiler('Compiler_x64')
 			+ ' /LIBPATH:"$WindowsSDKLibPath$\ucrt\x64"'
 			+ ' /LIBPATH:"$WindowsSDKLibPath$\um\x64"'
 			+ ' /LIBPATH:$ExternalLibrariesPath$'
+			+ ' /LIBPATH:"build\Debug\lib"'
 
 .SystemLibraries = ' Shell32.lib Gdi32.lib User32.lib Opengl32.lib'
 

@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "Engine.h"
+#include "GameEngine/Interface/Engine.h"
 
 class Player: public Entity
 {
@@ -10,8 +10,8 @@ public:
     ~Player();
 
 
-    i8 heal = 100;
-    i8 armor = 0;
+    M_PROPERTY(P_READ_ONLY) i8 heal = 100;
+    M_PROPERTY(P_READ_ONLY) i8 armor = 0;
 };
 
 #endif

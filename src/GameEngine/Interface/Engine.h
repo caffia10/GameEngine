@@ -9,7 +9,8 @@
 #define P_READ_ONLY 0x0001
 #define P_EDIT_ANYWHERE 0X002
 
-#define PROPERTY(p_type_args)
+#define M_PROPERTY(p_type_args)
+
 
 struct Component
 {
