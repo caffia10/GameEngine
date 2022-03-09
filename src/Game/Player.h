@@ -1,17 +1,20 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "GameEngine/Interface/Engine.h"
+#include "Engine/Interface/Engine.h"
 
-class Player: public Entity
+#define METACLASS(classType) classType
+#define METACLASS(className)
+#define METACLASS(className)
+
+class  METACLASS(Player): public Entity
 {
 public:
     Player(/* args */);
     ~Player();
 
-
-    M_PROPERTY(P_READ_ONLY) i8 heal = 100;
-    M_PROPERTY(P_READ_ONLY) i8 armor = 0;
+    i8 heal = 100;
+    i8 armor = 0;
 };
 
 #endif

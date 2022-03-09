@@ -15,40 +15,35 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\src\Core\Common.h" />
-    <CustomBuild Include="..\src\Core\HashTable.cpp" />
-    <CustomBuild Include="..\src\Core\HashTable.h" />
-    <CustomBuild Include="..\src\Core\MathDef.h" />
-    <CustomBuild Include="..\src\Core\MetaInfo.h" />
-    <CustomBuild Include="..\src\Core\StorageHandler.h" />
-    <CustomBuild Include="..\src\Core\String.cpp" />
-    <CustomBuild Include="..\src\Core\String.h" />
-    <CustomBuild Include="..\src\Core\WindowsCommon.h" />
-    <CustomBuild Include="..\src\Game\Player.cpp" />
-    <CustomBuild Include="..\src\Game\Player.h" />
-    <CustomBuild Include="..\src\Game\Source.cpp" />
+    <CustomBuild Include="Console.cpp" />
+    <CustomBuild Include="Console.h" />
+    <CustomBuild Include="ImGuiImpl.h" />
+    <CustomBuild Include="MainMenuBar.cpp" />
+    <CustomBuild Include="MainWindow.cpp" />
+    <CustomBuild Include="MainWindow.h" />
+    <CustomBuild Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{61619638-6c94-4f93-bc2a-7f5284b7d434}</ProjectGuid>
+    <ProjectGuid>{d34c8bf0-6c94-4f93-bc2a-7f5284b7d434}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <LocalDebuggerCommand>..\bin\Game_debug.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>..\..\bin\Editor_debug.exe</LocalDebuggerCommand>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|X64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <LocalDebuggerCommand>..\bin\Game_test.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>..\..\bin\Editor_test.exe</LocalDebuggerCommand>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'" Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <LocalDebuggerCommand>..\bin\Game.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>..\..\bin\Editor.exe</LocalDebuggerCommand>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -64,24 +59,24 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'">
-    <NMakeBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide Game_$(Configuration)</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide -clean Game_$(Configuration)</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>DEBUG_BUILD;USING_IMGUI=1;</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\Program Files\Microsoft Visual Studio\2022\Preview\VC\Tools\MSVC\14.29.30130\include;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\winrt;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\cppwinrt;..\src\GameEngine;..\external\include;..\src\Core;</NMakeIncludeSearchPath>
+    <NMakeBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide Editor_$(Configuration)</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide -clean Editor_$(Configuration)</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>DEBUG_BUILD;IMGUI_IMPL_OPENGL_LOADER_CUSTOM;</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>..\..\..\..\..\Program Files\Microsoft Visual Studio\2022\Preview\VC\Tools\MSVC\14.29.30130\include;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\winrt;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\cppwinrt;..\..\external\include;..\Core;..\Engines;..\Game;..\Editor;..\Tools;</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest </AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|X64'">
-    <NMakeBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide Game_$(Configuration)</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide -clean Game_$(Configuration)</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>DEBUG_BUILD;USING_IMGUI=1;</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\Program Files\Microsoft Visual Studio\2022\Preview\VC\Tools\MSVC\14.29.30130\include;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\winrt;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\cppwinrt;..\src\GameEngine;..\external\include;..\src\Core;</NMakeIncludeSearchPath>
+    <NMakeBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide Editor_$(Configuration)</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide -clean Editor_$(Configuration)</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>DEBUG_BUILD;IMGUI_IMPL_OPENGL_LOADER_CUSTOM;</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>..\..\..\..\..\Program Files\Microsoft Visual Studio\2022\Preview\VC\Tools\MSVC\14.29.30130\include;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\winrt;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\cppwinrt;..\..\external\include;..\Core;..\Engines;..\Game;..\Editor;..\Tools;</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest </AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'">
-    <NMakeBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide Game_$(Configuration)</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide -clean Game_$(Configuration)</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>USING_IMGUI=1;</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>..\..\..\..\Program Files\Microsoft Visual Studio\2022\Preview\VC\Tools\MSVC\14.29.30130\include;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\winrt;..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\cppwinrt;..\src\GameEngine;..\external\include;..\src\Core;</NMakeIncludeSearchPath>
+    <NMakeBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide Editor_$(Configuration)</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>cd $(SolutionDir)\.. &amp; fbuild -ide -clean Editor_$(Configuration)</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>IMGUI_IMPL_OPENGL_LOADER_CUSTOM;</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>..\..\..\..\..\Program Files\Microsoft Visual Studio\2022\Preview\VC\Tools\MSVC\14.29.30130\include;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\winrt;..\..\..\..\..\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\cppwinrt;..\..\external\include;..\Core;..\Engines;..\Game;..\Editor;..\Tools;</NMakeIncludeSearchPath>
     <AdditionalOptions>/std:c++latest </AdditionalOptions>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'">

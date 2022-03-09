@@ -45,4 +45,6 @@
 #define MZeroMemory(dest,size) memset(dest, 0, size)
 
 
+#define UNREFERENCED_PARAMETER(x) x
+
 #endif // COMMON_H

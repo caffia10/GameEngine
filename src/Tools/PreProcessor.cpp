@@ -5,6 +5,7 @@
 #include "../Core/StorageHandler.h"
 #include "../Core/MathDef.h"
 #include "../Core/MetaInfo.h"
+#include "../Core/HashTable.h"
 
 /*
 This is a example of how we generate and save metainfo of each entiy
@@ -49,15 +50,23 @@ EntityFactory LoadFactoryInstenceHandler()
 
 struct MetaDataMember
 {
-	char* type;
-	char* name;
-	char* defaultValue;
+	String* type;
+	String* name;
 };
 
 struct MetaDataContainer
 {
-	char* structName;
+	String* className;
 	std::vector<MetaDataMember> members;
+};
+
+enum HeaderType
+{
+	NONE_HEADER_TYPE,
+	META_HEADER_TYPE,
+	CLASS_HEADER_TYPE,
+	STRUCT_HEADER_TYPE,
+	ENUM_HEADER_TYPE
 };
 
 
@@ -66,14 +75,16 @@ struct LineNode
 	String* value;
 	LineNode* previousLine;
 	LineNode* nextLine;
-	bool isHeaderLine = false;
+	HeaderType HeaderType = NONE_HEADER_TYPE;
 };
 
-static String metaCantRecProt = "protect:"_s;
-static String metaCantRecPriv = "private:"_s;
-static String metaCanRec = "public:"_s;
-static String metaClassHeader = "class"_s;
-static String metaHeaderEntity = "entity"_s;
+static String protectTag = "protect"_s;
+static String privateTag = "private"_s;
+static String publicTag = "public"_s;
+static String classTag = "class"_s;
+static String entityTag = "Entity"_s;
+static String structTag = "struct"_s;
+static String enumTag = "enum"_s;
 static char const* emptyChar = "";
 static char const* withSpaceChar = " ";
 
@@ -110,15 +121,19 @@ void ParseFileContent(String& fileContent, LineNode* lines)
 
 	u8 metaCantRecProtCount = 0;
 	u8 metaCantRecPrivCount = 0;
-	u8 metaCanRecCount = 0;
-	u8 classHeaderCountOne = 0;
-	u8 classHeaderCountTwo = 0;
+	u8 classTagCount = 0;
+	u8 enumTagCount = 0;
+	u8 structTagCount = 0;
+	u8 publicTagCount = 0;
+	u8 entityTagCount = 0;
 	u32 braceHeadeCountr = 0;
 
 	StringBuilder strBuilder(100);
 	bool canRec = true;
 	bool isClassHeaderLine = false;
-	bool isClassHeaderToMeta = false;
+	bool isHeaderLine = false;
+	bool isClassHeaderPublicLabel = false;
+	bool skipLine = false;
 
 	while (char const character = *fileContent)
 	{
@@ -128,19 +143,70 @@ void ParseFileContent(String& fileContent, LineNode* lines)
 			continue;
 		}
 
-		if (!isClassHeaderToMeta)
+		if (character == '\n')
 		{
-			if (!isClassHeaderLine)
+			lineNode.value = MakeString(strBuilder);
+			RestartStringBuilder(strBuilder);
+			// We create a new line node and switch to curren variable.
+			LineNode newLineNode = {};
+			newLineNode.previousLine = &lineNode;
+			lineNode.nextLine = &newLineNode;
+			lineNode = newLineNode;
+
+			fileContent++;
+			continue;
+
+		}
+
+		if (!isHeaderLine)
+		{
+			// we check by header type
+			if (lineNode.HeaderType == NONE_HEADER_TYPE)
 			{
-				isClassHeaderLine = StringMatch(metaClassHeader, character, classHeaderCountOne);
+				// check if current line contains the string "class"
+				if (StringMatch(classTag, character, classTagCount))
+				{
+					isClassHeaderLine = true;
+					lineNode.HeaderType = CLASS_HEADER_TYPE;
+				}
+
+				if (StringMatch(enumTag, character, enumTagCount))
+				{
+					isHeaderLine = true;
+					lineNode.HeaderType = ENUM_HEADER_TYPE;
+				}
+
+				if (StringMatch(structTag, character, structTagCount))
+				{
+					isHeaderLine = true;
+					lineNode.HeaderType = STRUCT_HEADER_TYPE;
+				}
 			}
-			else
+			else if (isClassHeaderLine)
 			{
-				lineNode.isHeaderLine = isClassHeaderToMeta = StringMatch(metaHeaderEntity, character, classHeaderCountTwo);
+
+				if (!isClassHeaderPublicLabel)
+				{
+					//check if current line contains the string "public"
+					isClassHeaderPublicLabel = StringMatch(publicTag, character, publicTagCount);
+				}
+				else
+				{
+					//check if current line cotains the string "entity"
+					if (StringMatch(entityTag, character, entityTagCount))
+					{
+						lineNode.HeaderType = META_HEADER_TYPE;
+						isHeaderLine = true;
+						isClassHeaderPublicLabel = false;
+					}
+
+				}
 			}
 		}
 		else
 		{
+			isClassHeaderLine = false;
+
 			if (character == '{')
 			{
 				braceHeadeCountr++;
@@ -152,18 +218,20 @@ void ParseFileContent(String& fileContent, LineNode* lines)
 				if (braceHeadeCountr == 0)
 				{
 					canRec = true;
-					isClassHeaderToMeta = true;
+					isHeaderLine = true;
 				}
 			}
 
 			if (canRec)
 			{
-				canRec = !StringMatch(metaCantRecProt, character, metaCantRecProtCount);
-				canRec &= !StringMatch(metaCantRecPriv, character, metaCantRecPrivCount);
+				skipLine = character == '(';
+
+				canRec = !StringMatch(protectTag, character, metaCantRecProtCount);
+				canRec &= !StringMatch(privateTag, character, metaCantRecPrivCount);
 			}
 			else
 			{
-				canRec |= StringMatch(metaCanRec, character, metaCanRecCount);
+				canRec |= StringMatch(publicTag, character, publicTagCount);
 			}
 		}
 
@@ -178,30 +246,15 @@ void ParseFileContent(String& fileContent, LineNode* lines)
 
 		Append(strBuilder, character);
 
-		if (character == '\n')
-		{
-			if (!isClassHeaderToMeta)
-			{
-				RestartStringBuilder(strBuilder);
-				fileContent++;
-				continue;
-			}
-
-			lineNode.value = MakeString(strBuilder);
-			RestartStringBuilder(strBuilder);
-			// We create a new line node and switch to curren variable.
-			LineNode newLineNode = {};
-			newLineNode.previousLine = &lineNode;
-			lineNode.nextLine = &newLineNode;
-			lineNode = newLineNode;
-		}
-
 		fileContent++;
 	}
 }
 
 int main(int argc, char** argv)
 {
+	UNREFERENCED_PARAMETER(argc);
+	UNREFERENCED_PARAMETER(argv);
+
 #if TARGET_WINDOWS
 	AttachConsole(ATTACH_PARENT_PROCESS);
 	// Handles returned by GetStdHandle can be used by applications that need to read from or write to the console.
@@ -209,6 +262,8 @@ int main(int argc, char** argv)
 #endif
 
 	Strings fileList = GetFileListFromFolder("src\\Game");
+
+	HashTable<MetaDataContainer>* hashTable = CreateHashTable<MetaDataContainer>();
 
 	Strings::iterator const itEnd = fileList.end();
 	for (Strings::iterator it = fileList.begin(); it != itEnd; it++)
@@ -225,40 +280,70 @@ int main(int argc, char** argv)
 		// TODO : check if I need prevent create file if content are empty
 
 		LineNode* currentLine = &lineNode;
-		MetaInfo metaInfo;
+		MetaDataContainer* metaInfo;
 		while (currentLine)
 		{
-			u8 classHeaderCountOne = 0;
-			bool classHeaderMatch = false;
-			StringBuilder strBuilder(100);
-			bool recClassHeader = false;
-			while (char const character = **currentLine->value)
+
+			switch (currentLine->HeaderType)
 			{
-				if (currentLine->isHeaderLine)
+			case META_HEADER_TYPE:
+			{
+				u8 classHeaderCountOne = 0;
+				bool classHeaderMatch = false;
+				StringBuilder strBuilder(100);
+				bool recClassHeader = false;
+
+				while (char const character = **currentLine->value)
 				{
-					if (!classHeaderMatch)
+					if (currentLine->HeaderType)
 					{
-						classHeaderMatch = StringMatch(metaClassHeader, character, classHeaderCountOne);
-						currentLine->value++;
-						continue;
-					}
-					else if (character == *emptyChar || character == *withSpaceChar)
-					{
-						if (recClassHeader)
+						if (!classHeaderMatch)
 						{
-							break;
+							// we skip the string "class" to get only the class name string
+							classHeaderMatch = StringMatch(classTag, character, classHeaderCountOne);
+							currentLine->value++;
+							continue;
 						}
-						currentLine->value++;
-						continue;
-					}
-					else
-					{
-						recClassHeader = true;
-						Append(strBuilder, character);
+						else if (character == *emptyChar || character == *withSpaceChar)
+						{
+							if (recClassHeader)
+							{
+								break;
+							}
+							currentLine->value++;
+							continue;
+						}
+						else
+						{
+							recClassHeader = true;
+							Append(strBuilder, character);
+						}
 					}
 				}
+
+				metaInfo = new  MetaDataContainer();
+				metaInfo->className = MakeString(strBuilder);
+				HashTableSet(hashTable, metaInfo->className, metaInfo);
+				
+				break;
+			}
+			case CLASS_HEADER_TYPE:
+				break;
+			case STRUCT_HEADER_TYPE:
+				break;
+			case ENUM_HEADER_TYPE:
+			{
+				MetaDataMember metaDataMember;
+
+			}
+				break;
+
+			default:
+			{
+				break;
 			}
 
+			}
 
 			currentLine = currentLine->nextLine;
 		}

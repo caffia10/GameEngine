@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="Console.cpp">
+      <Filter>src\Editor</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Console.h">
+      <Filter>src\Editor</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ImGuiImpl.h">
+      <Filter>src\Editor</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MainMenuBar.cpp">
+      <Filter>src\Editor</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MainWindow.cpp">
+      <Filter>src\Editor</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MainWindow.h">
+      <Filter>src\Editor</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Source.cpp">
+      <Filter>src\Editor</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src\Editor">
+      <UniqueIdentifier>{9938175e-6c94-4f93-bc2a-7f5284b7d434}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{58a44f9c-6c94-4f93-bc2a-7f5284b7d434}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

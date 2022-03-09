@@ -28,7 +28,13 @@ HashTable<T>* CreateHashTable();
 u32 GetHash(String const* key);
 
 template<typename T>
-Entry<T>* HashPair(String const* key, T const& value);
+inline Entry<T>* HashPair(String* key, void* value)
+{
+    Entry* entry = new Entry();
+    entry->key = key;
+    entry->value = value;
+    return entry;
+}
 
 template<typename T>
 void HashTableSet(HashTable<T>* hashTable, String const* key, T const* value);

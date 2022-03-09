@@ -55,9 +55,12 @@ Compiler('Compiler_x64')
 					+ ' /I"$WindowsSDKIncludePath$\um"'
 					+ ' /I"$WindowsSDKIncludePath$\winrt"'
 					+ ' /I"$WindowsSDKIncludePath$\cppwinrt"'
-					+ ' /I"$SourcePath$"'
 					+ ' /I"$ExternalIncludePath$"'
 					+ ' /I"$CorePath$"'
+					+ ' /I"$EnginePath$"'
+					+ ' /I"$GamePath$"'
+					+ ' /I"$EditorPath$"'
+					+ ' /I"$ToolsSourcePath$"'
 
 .CommonCompilerOptions = '/c "%1" /Fo"%2" /nologo /FC /GF /Gm- /GR- /Oi /fp:fast /EHa- /EHs- /EHc- /std:c++latest'
 					+ .CompilerWarningOptions

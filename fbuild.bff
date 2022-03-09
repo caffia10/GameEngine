@@ -1,12 +1,18 @@
 // Project Config
 .GameName = 'game'
-.SourcePath = 'src/GameEngine'
-.GamePath = 'src/Game'
-.CorePath = 'src/Core'
+
+// Paths
+.CorePath = 'src\Core'
+.EnginePath = 'src\Engines'
+.GamePath = 'src\Game'
+.EditorPath = 'src\Editor'
+.ToolsSourcePath = 'src\Tools'
+
+// types
 .OutputPath = 'build'
 .BinPath = 'bin'
-.SolutionPath = 'solution'
-.ToolsSourcePath = 'src/Tools'
+.SolutionPath = 'src'
+
 
 // Includes
 #include "build/paths.bff"
@@ -21,7 +27,7 @@ ForEach(.BuildType in .BuildTypes)
 	Using(.BuildType)
 
 	// Sources
-	Unity('Core_$BuildTypeName$')
+	Unity('Core_Unity_$BuildTypeName$')
 	{
 		.UnityInputPath = '$CorePath$'
 		.UnityOutputPath = '$OutputPath$/$BuildTypeName$'
@@ -37,24 +43,102 @@ ForEach(.BuildType in .BuildTypes)
 		.UnityNumFiles = 1
 	}
 
-	Unity('GameSource_Unity_$BuildTypeName$')
+	Unity('Engine_Unity_$BuildTypeName$')
 	{
-		.UnityInputPath = '$SourcePath$'
+		.UnityInputPath = 'EnginePath'
 		.UnityOutputPath = '$OutputPath$/$BuildTypeName$'
-		.UnityOutputPattern = "GameSourceUnity.cpp"
+		.UnityOutputPattern = "EngineUnity.cpp"
 		.UnityNumFiles = 1
 	}
 
-	// Core
+	Unity('Game_Unity_$BuildTypeName$')
+	{
+		.UnityInputPath = '$GamePath$'
+		.UnityOutputPath = '$OutputPath$/$BuildTypeName$'
+		.UnityOutputPattern = "GameUnity.cpp"
+		.UnityNumFiles = 1
+	}
+
+	Unity('Editor_Unity_$BuildTypeName$')
+	{
+		.UnityInputPath = '$EditorPath$'
+		.UnityOutputPath = '$OutputPath$/$BuildTypeName$'
+		.UnityOutputPattern = "EditorUnity.cpp"
+		.UnityNumFiles = 1
+	}
+
+	// Core lib
 	Library('CoreLib_$BuildTypeName$')
 	{
 		.CompilerOptions = '$ExeCompilerOptions$'
-		.CompilerInputUnity =   'Core_$BuildTypeName$'
+		.CompilerInputUnity =   'Core_Unity_$BuildTypeName$'
 		.CompilerOutputPath = '$OutputPath$/$BuildTypeName$'
 		.LibrarianOutput = '$OutputPath$/$BuildTypeName$/lib/Core.lib'
 	}
 
-	// Preprocessor
+	// Engine lib
+	Library('EngineLib_$BuildTypeName$')
+	{
+		.CompilerOptions = '$ExeCompilerOptions$'
+		.CompilerInputUnity =   'Engine_Unity_$BuildTypeName$'
+		.LibrarianAdditionalInputs   = { 'CoreLib_$BuildTypeName$' } 
+		.CompilerOutputPath = '$OutputPath$/$BuildTypeName$'
+		.LibrarianOutput = '$OutputPath$/$BuildTypeName$/lib/Engine.lib'
+	}
+
+	// Game dll
+	DLL( 'GameDLL_$BuildTypeName$' )
+	{
+		.LinkerOptions = '$ExeLinkerOptions$';
+		.LinkerOutput = '$OutputPath$/Game$BuildTypeName$.dll';
+		.Libraries = {
+			'CoreLib_$BuildTypeName$',
+			'EngineLib_$BuildTypeName$'
+		};
+		.Libraries2 = 
+		{
+			'Game_Unity_$BuildTypeName$'
+		};
+	}
+
+	// Game
+	Executable('Game_$BuildTypeName$')
+	{
+		.LinkerOptions = '$ExeLinkerOptions$ /SUBSYSTEM:WINDOWS,5.02'
+		.LinkerOutput = '$BinPath$/GameEngine$BuildTypeSufix$.exe'
+		.Libraries = {
+			'GameDLL_$BuildTypeName$',
+		}
+	}
+
+	// ImGui
+	ObjectList('ImGuiSource_$BuildTypeName$')
+	{
+		.CompilerOptions = '$ExeCompilerOptions$ -DIMGUI_IMPL_OPENGL_LOADER_CUSTOM'
+		.CompilerInputFiles = {
+			'external/include/imgui/imgui_impl.cpp',
+		}
+		.CompilerOutputPath = '$OutputPath$/$BuildTypeName$'
+	}
+	// Win32 Platform Game
+	ObjectList('EditorSource_$BuildTypeName$')
+	{
+		.CompilerOptions = '$ExeCompilerOptions$  -DUSING_IMGUI=1'
+		.CompilerInputUnity =   'Editor_Unity_$BuildTypeName$'
+		.CompilerOutputPath = '$OutputPath$/$BuildTypeName$'
+	}
+	Executable('Editor_$BuildTypeName$')
+	{
+		.LinkerOptions = '$ExeLinkerOptions$ /SUBSYSTEM:WINDOWS,5.02'
+		.LinkerOutput = '$BinPath$/Editor$BuildTypeSufix$.exe'
+		.Libraries = {
+			'ImGuiSource_$BuildTypeName$',
+			'GameDLL_$BuildTypeName$'
+			'EditorSource_$BuildTypeName$',
+		}
+	}
+
+		// Preprocessor
 	ObjectList('PreprocessorSource_$BuildTypeName$')
 	{
 		.CompilerOptions = '$ExeCompilerOptions$'
@@ -71,53 +155,6 @@ ForEach(.BuildType in .BuildTypes)
 		}
 	}
 
-	// ImGui
-	ObjectList('ImGuiSource_$BuildTypeName$')
-	{
-		.CompilerOptions = '$ExeCompilerOptions$ -DIMGUI_IMPL_OPENGL_LOADER_CUSTOM'
-		.CompilerInputFiles = {
-			'external/include/imgui/imgui_impl.cpp',
-		}
-		.CompilerOutputPath = '$OutputPath$/$BuildTypeName$'
-	}
-
-	// Win32 Platform Game
-	ObjectList('GameSource_$BuildTypeName$')
-	{
-		.CompilerOptions = '$ExeCompilerOptions$ -DUSING_IMGUI=1'
-		.CompilerInputFiles = {
-			'$GamePath$/Source.cpp',
-		}
-		.CompilerOutputPath = '$OutputPath$/$BuildTypeName$'
-	}
-	Executable('Game_$BuildTypeName$')
-	{
-		.LinkerOptions = '$ExeLinkerOptions$ /SUBSYSTEM:WINDOWS,5.02'
-		.LinkerOutput = '$BinPath$/Game$BuildTypeSufix$.exe'
-		.Libraries = {
-			'GameSource_$BuildTypeName$',
-		}
-	}
-
-	// Win32 Platform
-	ObjectList('EditorSource_$BuildTypeName$')
-	{
-		.CompilerOptions = '$ExeCompilerOptions$ -DUSING_IMGUI=1'
-		.CompilerInputFiles = {
-			'$SourcePath$/Source.cpp',
-		}
-		.CompilerOutputPath = '$OutputPath$/$BuildTypeName$'
-	}
-	Executable('Editor_$BuildTypeName$')
-	{
-		.LinkerOptions = '$ExeLinkerOptions$ /SUBSYSTEM:WINDOWS,5.02'
-		.LinkerOutput = '$BinPath$/Editor$BuildTypeSufix$.exe'
-		.Libraries = {
-			'EditorSource_$BuildTypeName$',
-			'ImGuiSource_$BuildTypeName$',
-		}
-	}
-
 	// Add to all targets
 	^AllTargets + 'Editor_$BuildTypeName$'
 
@@ -129,23 +166,19 @@ Alias('all') { .Targets = .AllTargets }
 // VS Solution
 VCXProject('Core_Project')
 {
-	.ProjectOutput = '$SolutionPath$/Core.vcxproj'
+	.ProjectOutput = '$CorePath$\Core.vcxproj'
 
-	.ProjectInputPaths = '$CorePath$/'
-	.ProjectBasePath = '$CorePath$/'
+	.ProjectInputPaths = '$CorePath$\'
+	.ProjectBasePath = './'
 
 	.ProjectConfigs = {}
-	.ProjectAllowedFileExtensions   = { '*.cpp', '*.h' }
-	.ProjectFileType = [
-		.FileType   = 'CppForm'
-		.Pattern    = '*\\Forms\\*.h'
-	]
 	ForEach(.BuildType in .BuildTypes)
 	{
 		Using(.BuildType)
 		.Config = [
 			.Platform = 'X64'
 			.Config = .BuildTypeName
+			.Target = 'CoreLib_$BuildTypeName$'
 		]
 		^ProjectConfigs + .Config
 	}
@@ -153,48 +186,37 @@ VCXProject('Core_Project')
 	.ProjectBuildCommand = 'cd ^$(SolutionDir)\.. &amp; fbuild -ide CoreLib_^$(Configuration)'
 	.ProjectRebuildCommand = 'cd ^$(SolutionDir)\.. &amp; fbuild -ide -clean CoreLib_^$(Configuration)'
 }
-
-VCXProject('Preprocessor_Project')
+VCXProject('Engines_Project')
 {
-	.ProjectOutput = '$SolutionPath$/Preprocessor.vcxproj'
+	.ProjectOutput = '$EnginePath$\Engines.vcxproj'
 
-	.ProjectInputPaths = '$ToolsSourcePath$/'
-	.ProjectBasePath = '$ToolsSourcePath$/'
+	.ProjectInputPaths = '$EnginePath$\'
+	.ProjectBasePath = './'
+	
 
 	.ProjectConfigs = {}
-	.ProjectAllowedFileExtensions   = { '*.cpp', '*.h' }
-	.ProjectFileType = [
-		.FileType   = 'CppForm'
-		.Pattern    = '*\\Forms\\*.h'
-	]
 	ForEach(.BuildType in .BuildTypes)
 	{
 		Using(.BuildType)
 		.Config = [
 			.Platform = 'X64'
 			.Config = .BuildTypeName
-			.Target = 'Preprocessor_$BuildTypeName$'
 		]
 		^ProjectConfigs + .Config
 	}
 
-	.ProjectBuildCommand = 'cd ^$(SolutionDir)\.. &amp; fbuild -ide Preprocessor_^$(Configuration)'
-	.ProjectRebuildCommand = 'cd ^$(SolutionDir)\.. &amp; fbuild -ide -clean Preprocessor_^$(Configuration)'
+	.ProjectBuildCommand = 'cd ^$(SolutionDir)\.. &amp; fbuild -ide EngineLib_^$(Configuration)'
+	.ProjectRebuildCommand = 'cd ^$(SolutionDir)\.. &amp; fbuild -ide -clean EngineLib_^$(Configuration)'
 }
 
 VCXProject('Game_Project')
 {
-	.ProjectOutput = '$SolutionPath$/Game.vcxproj'
+	.ProjectOutput = '$GamePath$\Game.vcxproj'
 
-	.ProjectInputPaths = {'$GamePath$/', '$CorePath$/'}
-	.ProjectBasePath = '$GamePath$/'
+	.ProjectInputPaths = '$GamePath$\'
+	.ProjectBasePath = './'
 
 	.ProjectConfigs = {}
-	.ProjectAllowedFileExtensions   = { '*.cpp', '*.h' }
-	.ProjectFileType = [
-		.FileType   = 'CppForm'
-		.Pattern    = '*\\Forms\\*.h'
-	]
 	ForEach(.BuildType in .BuildTypes)
 	{
 		Using(.BuildType)
@@ -212,17 +234,12 @@ VCXProject('Game_Project')
 
 VCXProject('Editor_Project')
 {
-	.ProjectOutput = '$SolutionPath$/Editor.vcxproj'
+	.ProjectOutput = '$EditorPath$\Editor.vcxproj'
 
-	.ProjectInputPaths = {'$SourcePath$/', '$GamePath$/', '$CorePath$/'}
-	.ProjectBasePath = '$SourcePath$/'
+	.ProjectInputPaths = '$EditorPath$\'
+	.ProjectBasePath = './'
 
 	.ProjectConfigs = {}
-	.ProjectAllowedFileExtensions   = { '*.cpp', '*.h' }
-	.ProjectFileType = [
-		.FileType   = 'CppForm'
-		.Pattern    = '*\\Forms\\*.h'
-	]
 	ForEach(.BuildType in .BuildTypes)
 	{
 		Using(.BuildType)
@@ -238,10 +255,60 @@ VCXProject('Editor_Project')
 	.ProjectRebuildCommand = 'cd ^$(SolutionDir)\.. &amp; fbuild -ide -clean Editor_^$(Configuration)'
 }
 
+VCXProject('Preprocessor_Project')
+{
+	.ProjectOutput = '$ToolsSourcePath$\Preprocessor.vcxproj'
+
+	.ProjectInputPaths = '$ToolsSourcePath$\'
+	.ProjectBasePath = './'
+
+	.ProjectConfigs = {}
+	ForEach(.BuildType in .BuildTypes)
+	{
+		Using(.BuildType)
+		.Config = [
+			.Platform = 'X64'
+			.Config = .BuildTypeName
+			.Target = 'Preprocessor_$BuildTypeName$'
+		]
+		^ProjectConfigs + .Config
+	}
+
+	.ProjectBuildCommand = 'cd ^$(SolutionDir)\.. &amp; fbuild -ide Preprocessor_^$(Configuration)'
+	.ProjectRebuildCommand = 'cd ^$(SolutionDir)\.. &amp; fbuild -ide -clean Preprocessor_^$(Configuration)'
+}
+
 VSSolution('GameEngine_Solution')
 {
+	.FolderA =
+	[
+		.Path      = '01 - Core'
+		.Projects  = { 'Core_Project'}
+	]
+	.FolderB = 
+	[
+		.Path      = '02 - Engines'
+		.Projects  = { 'Engines_Project' }
+	]
+	.FolderC = 
+	[
+		.Path      = '03 - Game'
+		.Projects  = { 'Game_Project' }
+	]
+	.FolderD = 
+	[
+		.Path      = '04 - Editor'
+		.Projects  = { 'Editor_Project' }
+	]
+	.FolderE = 
+	[
+		.Path      = '05 - Tools'
+		.Projects  = { 'Preprocessor_Project' }
+	]
+	.SolutionFolders = { .FolderA, .FolderB, .FolderC, .FolderD, .FolderE }
+
 	.SolutionOutput = '$SolutionPath$/GameEngine.sln'
-	.SolutionProjects = {'Core_Project','Preprocessor_Project', 'Game_Project', 'Editor_Project'}
+	.SolutionProjects = {'Core_Project','Engines_Project', 'Game_Project', 'Editor_Project','Preprocessor_Project',}
 	.SolutionConfigs = {}
 
 	ForEach(.BuildType in .BuildTypes)

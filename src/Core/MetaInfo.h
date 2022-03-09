@@ -18,6 +18,7 @@ struct MetaInfoProperty
 struct MetaInfo
 {
 	String* className;
+	void* instance;
 	MetaInfoProperty* properties;
 };
 
